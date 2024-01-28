@@ -1,25 +1,16 @@
 import pandas as pd
 import sys
-
-def col_index_to_letter(index):
-    """Convert a column index to an Excel column letter."""
-    letter = ''
-    while index > 0:
-        index, remainder = divmod(index - 1, 26)
-        letter = chr(65 + remainder) + letter
-    return letter
+from excel_utils import col_letter_to_index
 
 def remove_columns_from_excel(file_path, columns_to_remove):
     """Remove specified columns from an Excel file."""
     # Read the Excel file
     df = pd.read_excel(file_path)
 
-    # Map column indices to letters
-    column_index_to_letter_map = {i: col_index_to_letter(i) for i in range(1, len(df.columns) + 1)}
-
     # Find the corresponding column names to remove
+    columns_to_remove_indices = [col_letter_to_index(col) for col in columns_to_remove]
     columns_to_remove_names = [name for index, name in enumerate(df.columns) 
-                               if column_index_to_letter_map[index + 1] in columns_to_remove]
+                               if index in columns_to_remove_indices]
 
     # Remove the specified columns
     df_modified = df.drop(columns=columns_to_remove_names)
@@ -47,4 +38,4 @@ if __name__ == "__main__":
 
 
 # Example usage:
-# python map_and_remove_columns_xlsx.py path_to_excel.xlsx A H J AB AC AG AH AI AJ AK AL AM AN AO AP
+# python remove_columns.py path_to_excel.xlsx A H J AB AC AG AH AI AJ AK AL AM AN AO AP
